@@ -1,0 +1,30 @@
+{
+    "author"        : "Przemysław Ankowski <przemyslaw.ankowski@gmail.com>",
+    "license"       : "UNIT27-license",
+
+    "name"          : "luna-server",
+    "version"       : "1.0.0",
+    "description"   : "Luna communication server. Support WebSocket (RFC 6455) / HTTP request",
+    "main"          : "index.js",
+
+    "repository": {
+        "type"  : "git",
+        "url"   : "git://github.com/unit27/luna-server.git"
+    },
+
+    "dependencies": {
+        "ws"        : "*",
+        "director"  : "*"
+    },
+
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+
+    "keywords": [
+        "luna",
+        "server",
+        "luna-server",
+        "unit27"
+    ]
+}
