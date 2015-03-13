@@ -1,6 +1,6 @@
 /*******************************************************************************
  * Name: Luna communication server. Support WebSocket (RFC 6455) / HTTP request
- * Version: 1.0
+ * Version: 1.0.0
  * Author: Przemyslaw Ankowski (przemyslaw.ankowski@gmail.com)
  ******************************************************************************/
 
@@ -78,6 +78,26 @@ var Luna = function() {
          */
         onClientConnect: function(Socket) {
             /**
+             * Add socket connection state
+             */
+            Socket.__isConnected = true;
+
+            /**
+             * Add function to socket for set/get connection state
+             *
+             * @param state
+             *
+             * @returns {boolean|*}
+             */
+            Socket.isConnected = function(state) {
+                if (typeof state === "undefined") {
+                    return this.__isConnected;
+                }
+
+                this.__isConnected = state;
+            };
+
+            /**
              * Send message (text) via opened web socket
              *
              * @param message
@@ -126,6 +146,9 @@ var Luna = function() {
          * Emit when client disconnect via web socket
          */
         onClientDisconnect: function() {
+            // Change socket state
+            this.isConnected(false);
+
             // Emit event + socket as parameter
             self.emit("client-disconnect", this);
         },
@@ -196,7 +219,7 @@ var Luna = function() {
     };
 
     /**
-     * Is initialized? (setter / gatter)
+     * Is initialized? (setter / getter)
      *
      * @param state
      * @returns {boolean}
