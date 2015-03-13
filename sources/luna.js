@@ -106,6 +106,11 @@ var Luna = function() {
              * @returns {boolean}
              */
             Socket.sendMessage = function(message, afterJob) {
+                // Socket is not connected
+                if (!Socket.isConnected()) {
+                    return false;
+                }
+
                 // Send message
                 this.send(message, {}, afterJob);
 
@@ -122,6 +127,11 @@ var Luna = function() {
              * @returns {boolean}
              */
             Socket.sendData = function(data, afterJob) {
+                // Socket is not connected
+                if (!Socket.isConnected()) {
+                    return false;
+                }
+
                 // Send message
                 this.send(data, { binary:true }, afterJob);
 
