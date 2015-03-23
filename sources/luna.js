@@ -116,7 +116,7 @@ var Luna = function() {
                     this.send(message, {}, afterJob);
                 }
 
-                    // Something goes wrong
+                // Something goes wrong
                 catch (exception) {
                     return false;
                 }
@@ -144,7 +144,7 @@ var Luna = function() {
                     this.send(data, {binary: true}, afterJob);
                 }
 
-                    // Something goes wrong
+                // Something goes wrong
                 catch (exception) {
                     return false;
                 }
