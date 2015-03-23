@@ -112,7 +112,14 @@ var Luna = function() {
                 }
 
                 // Send message
-                this.send(message, {}, afterJob);
+                try {
+                    this.send(message, {}, afterJob);
+                }
+
+                    // Something goes wrong
+                catch (exception) {
+                    return false;
+                }
 
                 // Exit
                 return true;
@@ -133,7 +140,14 @@ var Luna = function() {
                 }
 
                 // Send message
-                this.send(data, { binary:true }, afterJob);
+                try {
+                    this.send(data, {binary: true}, afterJob);
+                }
+
+                    // Something goes wrong
+                catch (exception) {
+                    return false;
+                }
 
                 // Exit
                 return true;
@@ -302,7 +316,7 @@ var Luna = function() {
 
             // Check is SSL enabled
             var isSSLEnabled = (typeof options != "undefined" && typeof options.ssl != "undefined" &&
-                                typeof options.ssl.key != "undefined" && typeof options.ssl.cert != "undefined");
+            typeof options.ssl.key != "undefined" && typeof options.ssl.cert != "undefined");
 
             // With SSL
             if (isSSLEnabled) {
@@ -393,7 +407,7 @@ var Luna = function() {
             });
         }
 
-        // Something goes wrong
+            // Something goes wrong
         catch (exception) {
             // Throw error
             throw exception;
