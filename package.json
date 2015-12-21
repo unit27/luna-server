@@ -3,7 +3,7 @@
     "license"       : "UNIT27-license",
 
     "name"          : "luna-server",
-    "version"       : "1.0.1",
+    "version"       : "1.0.2",
     "description"   : "Luna communication server. Support WebSocket (RFC 6455) / HTTP request",
     "main"          : "index.js",
 
