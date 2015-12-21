@@ -60,7 +60,7 @@ var Luna = function() {
          */
         onSocketError: function(message) {
             // Emit event + message as parameter
-            self.emit("socket-error", message);
+            self.emit("socket-error", this, message);
         },
 
         /**
@@ -170,11 +170,11 @@ var Luna = function() {
          * Emit when client disconnect via web socket
          */
         onClientDisconnect: function() {
-            // Change socket state
-            this.isConnected(false);
-
             // Emit event + socket as parameter
             self.emit("client-disconnect", this);
+
+            // Change socket state
+            this.isConnected(false);
         },
 
         /**
