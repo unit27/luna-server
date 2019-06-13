@@ -75,8 +75,14 @@ var Luna = function() {
          * Emit when client connect via web socket
          *
          * @param Socket
+         * @param Request
          */
-        onClientConnect: function(Socket) {
+        onClientConnect: function(Socket, Request) {
+            /**
+             * Backward compatibility (for node WebSocket)
+             */
+            Socket.upgradeReq = Request;
+
             /**
              * Add socket connection state
              */
