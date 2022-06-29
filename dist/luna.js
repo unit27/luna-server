@@ -35,7 +35,7 @@ const Luna = function() {
     let isJson = false;
 
     // Luna communication server version
-    let version = "2.0.0";
+    let version = "2.0.2";
 
 
     /**
@@ -335,9 +335,9 @@ const Luna = function() {
      */
     this.start = function(host, port, options) {
         // Create basic options structure
-        options = {...options, ...{
+        options = {...{
             ssl: undefined
-        }};
+        }, ...options};
 
         // Luna is already initialized
         if (this.isInitialized ()) {
