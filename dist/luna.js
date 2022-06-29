@@ -1,6 +1,6 @@
 /*******************************************************************************
  * Name: Luna communication server. Support WebSocket (RFC 6455) / HTTP request
- * Version: 1.0.0
+ * Version: 2.0.0
  * Author: Przemyslaw Ankowski (przemyslaw.ankowski@gmail.com)
  ******************************************************************************/
 
@@ -35,7 +35,7 @@ const Luna = function() {
     let isJson = false;
 
     // Luna communication server version
-    let version = "1.0.0";
+    let version = "2.0.0";
 
 
     /**
