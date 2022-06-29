@@ -6,43 +6,42 @@
 
 
 // Require important stuff
-var Util = require("util");
-var EventEmitter = require("events").EventEmitter;
+const EventEmitter = require("events").EventEmitter;
 
 
 /**
  * Luna communication server constructor
  */
-var Luna = function() {
+const Luna = function() {
     // Alias for this
-    var self = this;
+    let self = this;
 
     // Http server
-    var HttpServer = null;
+    let HttpServer = null;
 
     // Web socket server
-    var WebSocketServer = null;
+    let WebSocketServer = null;
 
     // HTTP router
-    var HttpRouter = null;
+    let HttpRouter = null;
 
     // Definition of http server routing
-    var HttpRouting = {};
+    let HttpRouting = {};
 
     // Private flag for initialization
-    var isInitialized = false;
+    let isInitialized = false;
 
     // Is JSON request (user want JSON response)?
-    var isJson = false;
+    let isJson = false;
 
     // Luna communication server version
-    var version = "1.0.0";
+    let version = "1.0.0";
 
 
     /**
      * Luna communication server - events
      */
-    var Events = {
+    let Events = {
         /**
          * Emit event when got server error
          *
@@ -95,12 +94,13 @@ var Luna = function() {
              *
              * @returns {boolean|*}
              */
-            Socket.isConnected = function(state) {
-                if (typeof state === "undefined") {
+            Socket.isConnected = function(state = null) {
+                if (state === null) {
                     return this.__isConnected;
                 }
 
                 this.__isConnected = state;
+                return this.__isConnected;
             };
 
             /**
@@ -195,6 +195,47 @@ var Luna = function() {
     };
 
     /**
+     * Luna communication server - listeners
+     */
+    let Listeners = {
+        /**
+         * Listen on HTTP requests
+         *
+         * @param request
+         * @param response
+         */
+        httpRequest: function(request, response) {
+            // Set isJson flag
+            self.isJSON(typeof request.headers.accept !== "undefined" && request.headers.accept.toLowerCase().search("json") !== -1);
+
+            // Try to load data from POST request
+            if (request.method === "POST") {
+                // Try to get chunks
+                request.chunks = [];
+
+                // Get chunks
+                request.on("data", function (chunk) {
+                    request.chunks.push(chunk.toString());
+                });
+            }
+
+            // Try to load data from GET request
+            else {
+                // Get data directly from GET request
+                request.body = require("url").parse(request.url, true).query;
+            }
+
+            // Add router
+            self.getHttpRouter().dispatch(request, response, function(error) {
+                if (error) {
+                    response.writeHead(404);
+                    response.end();
+                }
+            });
+        }
+    };
+
+    /**
      * Get http server
      *
      * @returns {*}
@@ -254,8 +295,8 @@ var Luna = function() {
      * @param state
      * @returns {boolean}
      */
-    this.isInitialized = function(state) {
-        if (typeof state === "undefined") {
+    this.isInitialized = function(state = null) {
+        if (state === null) {
             return isInitialized;
         }
 
@@ -268,8 +309,8 @@ var Luna = function() {
      * @param state
      * @returns {boolean}
      */
-    this.isJSON = function(state) {
-        if (typeof state === "undefined") {
+    this.isJSON = function(state = null) {
+        if (state === null) {
             return isJson;
         }
 
@@ -293,8 +334,13 @@ var Luna = function() {
      *        }
      */
     this.start = function(host, port, options) {
+        // Create basic options structure
+        options = {...options, ...{
+            ssl: undefined
+        }};
+
         // Luna is already initialized
-        if (this.isInitialized()) {
+        if (this.isInitialized ()) {
             // Throw error
             throw new Error("Luna communication server is already initialized and running");
         }
@@ -312,7 +358,7 @@ var Luna = function() {
         // Try to include important stuff
         try {
             // Get director
-            var director = require("director");
+            let director = require("director");
 
             // Initialize http router
             HttpRouter = new director.http.Router(this.getHttpRouting()).configure({
@@ -321,91 +367,34 @@ var Luna = function() {
             });
 
             // Check is SSL enabled
-            var isSSLEnabled = (typeof options != "undefined" && typeof options.ssl != "undefined" &&
-            typeof options.ssl.key != "undefined" && typeof options.ssl.cert != "undefined");
+            let isSSLEnabled = (typeof options !== "undefined" && typeof options.ssl !== "undefined" && typeof options.ssl.key !== "undefined" && typeof options.ssl.cert !== "undefined");
 
             // With SSL
             if (isSSLEnabled) {
                 // Create file system utils
-                var FileSystem = require("fs");
+                let FileSystem = require("fs");
 
                 // HTTPS options
-                var httpsOptions = {
-                    key     : FileSystem.readFileSync(options.ssl.key),
-                    cert    : FileSystem.readFileSync(options.ssl.cert)
+                let httpsOptions = {
+                    key: FileSystem.readFileSync(options.ssl.key),
+                    cert: FileSystem.readFileSync(options.ssl.cert)
                 };
 
                 // Create HTTPS server
-                HttpServer = require("https").createServer(httpsOptions, function(request, response) {
-                    // Set isJson flag
-                    self.isJSON(typeof request.headers.accept !== "undefined" && request.headers.accept.toLowerCase().search("json") !== -1);
-
-                    // Try to load data from POST request
-                    if (request.method == "POST") {
-                        // Try to get chunks
-                        request.chunks = [];
-
-                        // Get chunks
-                        request.on("data", function (chunk) {
-                            request.chunks.push(chunk.toString());
-                        });
-                    }
-
-                    // Try to load data from GET request
-                    else {
-                        // Get data directly from GET request
-                        request.body = require("url").parse(request.url, true).query;
-                    }
-
-                    // Add router
-                    self.getHttpRouter().dispatch(request, response, function(error) {
-                        if (error) {
-                            response.writeHead(404);
-                            response.end();
-                        }
-                    });
-                });
+                HttpServer = require("https").createServer(httpsOptions, Listeners.httpRequest);
             }
 
             // Without SSL
             else {
                 // Create HTTP server
-                HttpServer = require("http").createServer(function(request, response) {
-                    // Set isJson flag
-                    self.isJSON(typeof request.headers.accept !== "undefined" && request.headers.accept.toLowerCase().search("json") !== -1);
-
-                    // Try to load data from POST request
-                    if (request.method == "POST") {
-                        // Try to get chunks
-                        request.chunks = [];
-
-                        // Get chunks
-                        request.on("data", function (chunk) {
-                            request.chunks.push(chunk.toString());
-                        });
-                    }
-
-                    // Try to load data from GET request
-                    else {
-                        // Get data directly from GET request
-                        request.body = require("url").parse(request.url, true).query;
-                    }
-
-                    // Add http router
-                    self.getHttpRouter().dispatch(request, response, function(error) {
-                        if (error) {
-                            response.writeHead(404);
-                            response.end();
-                        }
-                    });
-                });
+                HttpServer = require("http").createServer(Listeners.httpRequest);
             }
 
             // Start listen on selected port and host
             this.getHttpServer().listen(port, host);
 
             // Include web socket server
-            var WebSocketServerBase = require("ws").Server;
+            let WebSocketServerBase = require("ws").WebSocketServer;
 
             // Create web socket server
             WebSocketServer = new WebSocketServerBase({
@@ -413,7 +402,7 @@ var Luna = function() {
             });
         }
 
-            // Something goes wrong
+        // Something goes wrong
         catch (exception) {
             // Throw error
             throw exception;
@@ -435,7 +424,7 @@ var Luna = function() {
      * @returns {boolean}
      */
     this.stop = function() {
-        // Echelon is not initialized
+        // Luna is not initialized
         if (!this.isInitialized()) {
             return false;
         }
@@ -454,8 +443,8 @@ var Luna = function() {
     };
 };
 
-// Augment the prototype using util inherits
-Util.inherits(Luna, EventEmitter);
+// Inherit EventEmitter
+Luna.prototype = Object.create(EventEmitter.prototype);
 
 /**
  * Export luna communication server with all properties

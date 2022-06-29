@@ -6,4 +6,4 @@
 
 
 // Export luna object
-module.exports = require("./sources/luna");
+module.exports = require("./dist/luna");
