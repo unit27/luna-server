@@ -2,7 +2,7 @@
     "author": "Przemysław Ankowski <przemyslaw.ankowski@gmail.com>",
     "license": "UNIT27-license",
     "name": "luna-server",
-    "version": "2.0.2",
+    "version": "2.0.3",
     "description": "Luna communication server. Support WebSocket (RFC 6455) / HTTP request",
     "main": "index.js",
     "repository": {
