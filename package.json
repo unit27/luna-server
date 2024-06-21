@@ -16,7 +16,7 @@
         "url": "^0.11.0",
         "events": "^3.3.0",
         "director": "^1.2.8",
-        "ws": "^8.8.0"
+        "ws": "^8.17.1"
     },
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
